@@ -25,7 +25,6 @@ class Main{
      * @return bool
      */
     private static function checkPagePermission($excludePages){
-        $options = self::getOptions();
         $curPage = $GLOBALS['APPLICATION']->GetCurPage();
         $pages  = preg_split("/\r\n|\n|\r/", $excludePages);
 
@@ -198,18 +197,13 @@ class Main{
 
         $options = self::getOptions();
 
-        //if enabled, make dom
-        if($options['switch_on_lazy'] == 'Y' || $options['switch_on_cssinliner'] == 'Y')
-            //self::$dom = new DomQuery($content); //make dom from string
-
         //start lazy?
         if($options['switch_on_lazy'] == 'Y' && self::checkPagePermission($options['exclude_lazy']))
             self::lazyActions($content, $options);
 
         //start cssinliner?
         global $USER;
-        //TODO Проверка на админа
-        if($options['switch_on_cssinliner'] == 'Y' && self::checkPagePermission($options['exclude_cssinliner']))
+        if(!$USER->IsAdmin() && $options['switch_on_cssinliner'] == 'Y' && self::checkPagePermission($options['exclude_cssinliner']))
             self::cssinlinerActions($content, $options);
 
 
