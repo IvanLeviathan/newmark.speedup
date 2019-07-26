@@ -11,6 +11,7 @@ use Bitrix\Main\IO\File;
 class Main{
     private static $allOptions;
     private static $preview;
+    private static $userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36';
 
     /**
      * @return mixed
@@ -80,6 +81,7 @@ class Main{
      * @return array
      */
     private static function getExternalContent($url){
+
         $curlOptions = array(
             CURLOPT_CUSTOMREQUEST  =>"GET",        //set request type post or get
             CURLOPT_POST           =>false,        //set to GET
@@ -91,6 +93,7 @@ class Main{
             CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
             CURLOPT_TIMEOUT        => 120,      // timeout on response
             CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
+            CURLOPT_USERAGENT	   => self::$userAgent
         );
 
         $ch = curl_init($url);
@@ -153,6 +156,7 @@ class Main{
             if($css = self::checkFileSize($styleUrl, $maxFileSize, true))
                 return $css;
         }else{
+            $styleUrl = preg_replace('/\?\w+$/', '', $styleUrl);
             if($css = self::checkFileSize($_SERVER['DOCUMENT_ROOT'].$styleUrl, $maxFileSize))
                 return $css;
         }
@@ -218,7 +222,6 @@ class Main{
 
         //vars
         self::$preview = '/bitrix/images/'.self::getModuleId().'/newmark_lazy_load.gif'; //make preview url
-
         $content = preg_replace_callback_array(
             array(
                 "/<img[^>]+>/" => function($matches){
@@ -274,8 +277,8 @@ class Main{
                     foreach ($attrs[0] as $attr){ //find href
                         $attrArr = explode('=', $attr);
                         if($attrArr[0] == 'href'){
-                            $styleUrl = str_replace('"', '', $attrArr[1]);
-                            $styleUrl = preg_replace('/\?\w+$/', '', $styleUrl);
+                            unset($attrArr[0]);
+                            $styleUrl = str_replace('"', '', implode('=',$attrArr));
                             break;
                         }
                     }

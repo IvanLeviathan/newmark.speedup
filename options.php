@@ -60,6 +60,7 @@ $aTabs = array(
         "TAB" 	  => Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_NAME"),
         "TITLE"   => Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_TITLE"),
         "OPTIONS" => array(
+            Loc::getMessage(!ini_get('allow_url_fopen') ? "NEWMARK_CSSINLINER_OPTIONS_NO_FOPEN" : ""),
             Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_COMMON"),
             array(
                 "switch_on_cssinliner",
@@ -88,7 +89,7 @@ $aTabs = array(
             ),
             array(
                 "inline_google_fonts",
-                Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_INLINE_GOOGLE_FONTS").' - <b style="color:red;">В РАЗРАБОТКЕ</b>',
+                Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_INLINE_GOOGLE_FONTS"),
                 "N",
                 array("checkbox")
             ),

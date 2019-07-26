@@ -27,6 +27,7 @@ $MESS["NEWMARK_LAZYLOAD_OPTIONS_BOTTOM_NOTE"] = "
 
 
 //CSS INLINER
+$MESS['NEWMARK_CSSINLINER_OPTIONS_NO_FOPEN'] = 'Отключен параметр PHP allow_url_fopen. Для работы модуля с внешними стилями и Google Fonts требуется установить параметр PHP allow_url_fopen = On. Без включенного параметра возможна некорректная работа модуля';
 $MESS["NEWMARK_CSSINLINER_OPTIONS_TAB_NAME"] 		 	   = "CSS Inliner";
 $MESS["NEWMARK_CSSINLINER_OPTIONS_TAB_TITLE"] 		 	   = "Настройки CSS Inliner";
 $MESS["NEWMARK_CSSINLINER_OPTIONS_TAB_COMMON"] 	 	   = "Общие";
