@@ -12,7 +12,7 @@ class Main{
     private static $allOptions;
     private static $preview;
     private static $userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36';
-
+    private static $isMobile;
     /**
      * @return mixed
      */
@@ -61,6 +61,8 @@ class Main{
             "external_inline" 	=> Option::get(self::getModuleId(), "external_inline", "N"),
             "minify_css" 	=> Option::get(self::getModuleId(), "minify_css", "Y"),
             "exclude_cssinliner" 	=> Option::get(self::getModuleId(), "exclude_cssinliner", ""),
+            "enable_desktop_cssinliner" => Option::get(self::getModuleId(), 'enable_desktop_cssinliner', 'normal'),
+            "enable_desktop_lazy" => Option::get(self::getModuleId(), 'enable_desktop_lazy', 'normal'),
         );
         self::$allOptions = $optionsArr;
         return $optionsArr;
@@ -175,7 +177,7 @@ class Main{
             return false;
         }
 
-        if($options['switch_on_lazy'] == 'Y') {
+        if($options['switch_on_lazy'] == 'Y' && self::checkDesktop($options['enable_desktop_lazy'])) {
             if ($options['include_jquery'] == 'Y')
                 Asset::getInstance()->addJs("/bitrix/js/" . self::getModuleId() . "/newmark.lazyload.min.js");
             else
@@ -191,6 +193,28 @@ class Main{
 
         return false;
     }
+
+    /**
+     * @param $opt
+     * @return bool
+     */
+    private static function checkDesktop($opt){
+        self::$isMobile = self::$isMobile ? self::$isMobile : \CLightHTMLEditor::IsMobileDevice();
+        switch ($opt){
+            case 'normal':
+                return true;
+                break;
+            case 'desktop':
+                if(!self::$isMobile)
+                    return true;
+                break;
+            case 'mobile':
+                if(self::$isMobile)
+                    return true;
+                break;
+        }
+        return false;
+    }
     /**
      * @param string $content
      * @return bool
@@ -202,12 +226,12 @@ class Main{
         $options = self::getOptions();
 
         //start lazy?
-        if($options['switch_on_lazy'] == 'Y' && self::checkPagePermission($options['exclude_lazy']))
+        if($options['switch_on_lazy'] == 'Y' && self::checkPagePermission($options['exclude_lazy']) && self::checkDesktop($options['enable_desktop_lazy']))
             self::lazyActions($content, $options);
 
         //start cssinliner?
         global $USER;
-        if(!$USER->IsAdmin() && $options['switch_on_cssinliner'] == 'Y' && self::checkPagePermission($options['exclude_cssinliner']))
+        if(!$USER->IsAdmin() && $options['switch_on_cssinliner'] == 'Y' && self::checkPagePermission($options['exclude_cssinliner']) && self::checkDesktop($options['enable_desktop_cssinliner']))
             self::cssinlinerActions($content, $options);
 
 
@@ -222,10 +246,33 @@ class Main{
 
         //vars
         self::$preview = '/bitrix/images/'.self::getModuleId().'/newmark_lazy_load.gif'; //make preview url
+
+
+        //$dom = new DomQuery($content);
+        //$images = $dom->find($options['selector']);
+
+        /*
+        foreach ($images as $elm) {
+            $elm->attr('data-src', $elm->attr('src'));
+            $elm->attr('src', self::$preview);
+
+            if($elm->attr('srcset')) {
+                $elm->attr('data-srcset', $elm->attr('srcset'));
+                $elm->attr('srcset', self::$preview);
+            }
+        }
+        */
+
+
+
+
+
         $content = preg_replace_callback_array(
             array(
                 "/<img[^>]+>/" => function($matches){
                     $img = $matches[0];
+                    $uniqId = uniqid();
+
                     preg_match_all('/(\w+)=("[^"]*")/i',$img, $attrs);
                     $imgStr = '<img ';
 
@@ -247,17 +294,21 @@ class Main{
                             continue;
                         }
 
+
                         $imgStr .= $attr.' ';
-
                     }
-
+                    $imgStr .= 'data-nm-id="'.$uniqId.'"';
                     $imgStr .= '/>';
+
 
                     return $imgStr;
                 }
             ),
             $content
         );
+
+
+
     }
 
     /**

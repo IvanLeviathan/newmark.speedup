@@ -3,6 +3,11 @@
 $MESS["NEWMARK_SPEEDUP_OPTIONS_INPUT_APPLY"]          = "Применить";
 $MESS["NEWMARK_SPEEDUP_OPTIONS_INPUT_DEFAULT"]        = "По умолчанию";
 
+$MESS["NEWMARK_SPEEDUP_OPTIONS_ENABLE"]       = "Применять для";
+$MESS["NEWMARK_SPEEDUP_OPTIONS_ENABLE_MOBILE"] = "мобильных устройств";
+$MESS["NEWMARK_SPEEDUP_OPTIONS_ENABLE_DESKTOP"] = "desktop устройств";
+$MESS["NEWMARK_SPEEDUP_OPTIONS_ENABLE_NORMAL"] = "всех устройств";
+
 //LazyLoad
 $MESS["NEWMARK_LAZYLOAD_OPTIONS_TAB_NAME"] 		 	   = "LazyLoad";
 $MESS["NEWMARK_LAZYLOAD_OPTIONS_TAB_TITLE"] 		 	   = "Настройки LazyLoad";

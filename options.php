@@ -34,6 +34,16 @@ $aTabs = array(
             ),
             Loc::getMessage("NEWMARK_LAZYLOAD_OPTIONS_TAB_ACTION"),
             array(
+                "enable_desktop_lazy",
+                Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE"),
+                "normal",
+                array("selectbox", array(
+                    "normal" => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_NORMAL"),
+                    "desktop"   => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_DESKTOP"),
+                    "mobile"   => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_MOBILE")
+                ))
+            ),
+            array(
                 "selector",
                 Loc::getMessage("NEWMARK_LAZYLOAD_OPTIONS_TAB_SELECTOR").' - <b style="color:red;">В РАЗРАБОТКЕ</b>',
                 "",
@@ -69,6 +79,16 @@ $aTabs = array(
                 array("checkbox")
             ),
             Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_ACTION"),
+            array(
+                "enable_desktop_cssinliner",
+                Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE"),
+                "normal",
+                array("selectbox", array(
+                    "normal" => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_NORMAL"),
+                    "desktop"   => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_DESKTOP"),
+                    "mobile"   => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_MOBILE")
+                ))
+            ),
             array(
                 "exclude_cssinliner",
                 Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_EXCLUDE"),
