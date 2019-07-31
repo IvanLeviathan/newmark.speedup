@@ -102,6 +102,12 @@ $aTabs = array(
                 array("text", 5)
             ),
             array(
+                "cssinliner_cache_time",
+                Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_CACHE_TIME"),
+                "3600",
+                array("text", 5)
+            ),
+            array(
                 "external_inline",
                 Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_EXTERNAL_INLINE"),
                 "N",

@@ -13,6 +13,8 @@ class Main{
     private static $preview;
     private static $userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36';
     private static $isMobile;
+    private static $cssPath;
+    private static $cacheTime;
     /**
      * @return mixed
      */
@@ -63,6 +65,7 @@ class Main{
             "exclude_cssinliner" 	=> Option::get(self::getModuleId(), "exclude_cssinliner", ""),
             "enable_desktop_cssinliner" => Option::get(self::getModuleId(), 'enable_desktop_cssinliner', 'normal'),
             "enable_desktop_lazy" => Option::get(self::getModuleId(), 'enable_desktop_lazy', 'normal'),
+            "cssinliner_cache_time" => Option::get(self::getModuleId(), 'cssinliner_cache_time', '3600'),
         );
         self::$allOptions = $optionsArr;
         return $optionsArr;
@@ -78,12 +81,12 @@ class Main{
         $css = preg_replace('/;}/','}',$css);
         return $css;
     }
+
     /**
      * @param $url
      * @return array
      */
-    private static function getExternalContent($url){
-
+    private static function loadExternalContent($url){
         $curlOptions = array(
             CURLOPT_CUSTOMREQUEST  =>"GET",        //set request type post or get
             CURLOPT_POST           =>false,        //set to GET
@@ -99,7 +102,7 @@ class Main{
         );
 
         $ch = curl_init($url);
-        curl_setopt_array( $ch, $curlOptions);
+        curl_setopt_array($ch, $curlOptions);
         $content = curl_exec($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
@@ -107,6 +110,41 @@ class Main{
             'content' => $content,
             'info' => $info
         );
+    }
+
+    /**
+     * @param $url
+     * @return array|bool
+     */
+    private static function getExternalContent($url){
+        $md5Url = md5($url);
+        $cachePath = self::$cssPath.'/cache/'.$md5Url.'.css';
+
+        if(File::isFileExists($cachePath)){
+            if (!((time() - self::$cacheTime) < filemtime($cachePath))) {
+                File::deleteFile($cachePath);
+                $extFile = self::loadExternalContent($url);
+                File::putFileContents($cachePath, $extFile['content']);
+            }
+        }else{
+            $extFile = self::loadExternalContent($url);
+            File::putFileContents($cachePath, $extFile['content']);
+        }
+
+
+        if(File::isFileExists($cachePath)){
+            $file = new File($cachePath);
+            $content = File::getFileContents($cachePath);
+            $size = $file->getSize();
+
+            return array(
+                'content' => $content,
+                'size' => $size
+            );
+        }
+
+        return false;
+
     }
     /**
      * @param $bytes
@@ -126,7 +164,7 @@ class Main{
         if($external){
             $extFileContent = self::getExternalContent($path);
 
-            if(!$extFileContent['content'] || self::formatFileSize($extFileContent['info']['size_download']) > $maxFileSize) //check external file size
+            if(!$extFileContent['content'] || self::formatFileSize($extFileContent['size']) > $maxFileSize) //check external file size
                 return false;
 
             return $extFileContent['content'];
@@ -199,7 +237,6 @@ class Main{
      * @return bool
      */
     private static function checkDesktop($opt){
-        self::$isMobile = self::$isMobile ? self::$isMobile : \CLightHTMLEditor::IsMobileDevice();
         switch ($opt){
             case 'normal':
                 return true;
@@ -224,6 +261,11 @@ class Main{
             return false;
 
         $options = self::getOptions();
+
+        //set default vars
+        self::$isMobile = \CLightHTMLEditor::IsMobileDevice();
+        self::$cssPath = $_SERVER['DOCUMENT_ROOT']."/bitrix/css/".self::getModuleId();
+        self::$cacheTime = $options['cssinliner_cache_time'] ? $options['cssinliner_cache_time'] : 3600;
 
         //start lazy?
         if($options['switch_on_lazy'] == 'Y' && self::checkPagePermission($options['exclude_lazy']) && self::checkDesktop($options['enable_desktop_lazy']))
@@ -256,7 +298,7 @@ class Main{
             $md5 = md5($imgStr);
             $imagesArr[$md5] = $imgStr;
         }
-        
+
         $content = preg_replace_callback_array(
             array(
                 "/<img[^>]+>/" => function($matches) use ($options, $imagesArr){

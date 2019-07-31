@@ -40,6 +40,7 @@ $MESS["NEWMARK_CSSINLINER_OPTIONS_TAB_SWITCH_ON"]  	   = "Включить:";
 $MESS["NEWMARK_CSSINLINER_OPTIONS_TAB_ACTION"] 	   = "Поведение";
 $MESS["NEWMARK_CSSINLINER_OPTIONS_TAB_VIEW"] = "Внешний вид";
 
+$MESS["NEWMARK_CSSINLINER_OPTIONS_TAB_CACHE_TIME"] = 'Время кеша  "внешних стилей"<br/>В секундах (по умолчанию 3600 - 1 час)';
 $MESS["NEWMARK_CSSINLINER_OPTIONS_TAB_MAX_FILE_SIZE"]  	   = "Не подключать inline css для файлов весом более:<br/>(в Килобайтах, по умолчанию - 512)";
 $MESS['NEWMARK_CSSINLINER_OPTIONS_TAB_INLINE_GOOGLE_FONTS'] = "Подключать Google Fonts инлайн";
 $MESS['NEWMARK_CSSINLINER_OPTIONS_TAB_EXTERNAL_INLINE'] = "Подключать внешние стили инлайн";
