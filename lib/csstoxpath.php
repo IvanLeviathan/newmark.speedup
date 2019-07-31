@@ -5,7 +5,8 @@ namespace Rct567\DomQuery;
 /**
  * Class CssToXpath
  */
-namespace Newmark\Speedupp;
+namespace Newmark\Speedup;
+
 class CssToXpath
 {
 

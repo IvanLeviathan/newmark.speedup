@@ -45,7 +45,7 @@ $aTabs = array(
             ),
             array(
                 "selector",
-                Loc::getMessage("NEWMARK_LAZYLOAD_OPTIONS_TAB_SELECTOR").' - <b style="color:red;">В РАЗРАБОТКЕ</b>',
+                Loc::getMessage("NEWMARK_LAZYLOAD_OPTIONS_TAB_SELECTOR"),
                 "",
                 array("textarea", 5, 40)
             ),

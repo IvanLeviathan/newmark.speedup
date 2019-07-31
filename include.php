@@ -246,32 +246,27 @@ class Main{
 
         //vars
         self::$preview = '/bitrix/images/'.self::getModuleId().'/newmark_lazy_load.gif'; //make preview url
+        $selector = $options['selector'] ? $options['selector'] : 'img';
 
-
-        //$dom = new DomQuery($content);
-        //$images = $dom->find($options['selector']);
-
-        /*
-        foreach ($images as $elm) {
-            $elm->attr('data-src', $elm->attr('src'));
-            $elm->attr('src', self::$preview);
-
-            if($elm->attr('srcset')) {
-                $elm->attr('data-srcset', $elm->attr('srcset'));
-                $elm->attr('srcset', self::$preview);
-            }
+        $dom = new DomQuery($content);
+        $images = $dom->find($selector);
+        $imagesArr = array();
+        foreach ($images as $image){
+            $imgStr = str_replace(' ','',(string) $image);
+            $md5 = md5($imgStr);
+            $imagesArr[$md5] = $imgStr;
         }
-        */
-
-
-
-
-
+        
         $content = preg_replace_callback_array(
             array(
-                "/<img[^>]+>/" => function($matches){
+                "/<img[^>]+>/" => function($matches) use ($options, $imagesArr){
                     $img = $matches[0];
                     $uniqId = uniqid();
+                    $domImg = new DomQuery($img);
+                    $md5 = md5(str_replace(' ','', (string) $domImg));
+
+                    if(!array_key_exists($md5, $imagesArr))
+                        return $img;
 
                     preg_match_all('/(\w+)=("[^"]*")/i',$img, $attrs);
                     $imgStr = '<img ';
@@ -306,6 +301,7 @@ class Main{
             ),
             $content
         );
+
 
 
 

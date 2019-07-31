@@ -4,7 +4,8 @@
  *
  * @package Rct567\DomQuery
  */
-namespace Newmark\Speedupp;
+namespace Newmark\Speedup;
+
 class DomQuery extends DomQueryNodes
 {
     /**

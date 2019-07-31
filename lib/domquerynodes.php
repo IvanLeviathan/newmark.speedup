@@ -12,7 +12,7 @@
  *
  * @package Rct567\DomQuery
  */
-namespace Newmark\Speedupp;
+namespace Newmark\Speedup;
 class DomQueryNodes implements \Countable, \IteratorAggregate, \ArrayAccess
 {
 
