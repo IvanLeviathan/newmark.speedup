@@ -66,6 +66,9 @@ class Main{
             "enable_desktop_cssinliner" => Option::get(self::getModuleId(), 'enable_desktop_cssinliner', 'normal'),
             "enable_desktop_lazy" => Option::get(self::getModuleId(), 'enable_desktop_lazy', 'normal'),
             "cssinliner_cache_time" => Option::get(self::getModuleId(), 'cssinliner_cache_time', '3600'),
+            "switch_on_htmlminifier" => Option::get(self::getModuleId(), 'switch_on_htmlminifier', 'Y'),
+            "exclude_htmlminifier" => Option::get(self::getModuleId(), 'exclude_htmlminifier', ''),
+            "enable_desktop_htmlminifier" => Option::get(self::getModuleId(), 'enable_desktop_htmlminifier', 'normal'),
         );
         self::$allOptions = $optionsArr;
         return $optionsArr;
@@ -276,10 +279,17 @@ class Main{
         if(!$USER->IsAdmin() && $options['switch_on_cssinliner'] == 'Y' && self::checkPagePermission($options['exclude_cssinliner']) && self::checkDesktop($options['enable_desktop_cssinliner']))
             self::cssinlinerActions($content, $options);
 
+        //start HTML Minifier?
+        if($options['switch_on_htmlminifier'] == 'Y' && self::checkPagePermission($options['exclude_htmlminifier']) && self::checkDesktop($options['enable_desktop_htmlminifier']))
+            self::htmlminifierActions($content);
 
         return false;
     }
-
+    private static function htmlminifierActions(&$content){
+        $search = array('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s');
+        $replace = array('>','<','\\1');
+        $content = preg_replace($search, $replace, $content);
+    }
     /**
      * @param $content
      * @param $options

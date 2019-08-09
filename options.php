@@ -128,6 +128,37 @@ $aTabs = array(
             ),
             Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_BOTTOM_NOTE"),
         )
+    ),
+    array(
+        "DIV" 	  => "edit3",
+        "TAB" 	  => Loc::getMessage("NEWMARK_HTMLMINIFIER_OPTIONS_TAB_NAME"),
+        "TITLE"   => Loc::getMessage("NEWMARK_HTMLMINIFIER_OPTIONS_TAB_TITLE"),
+        "OPTIONS" => array(
+            Loc::getMessage("NEWMARK_HTMLMINIFIER_OPTIONS_TAB_COMMON"),
+            array(
+                "switch_on_htmlminifier",
+                Loc::getMessage("NEWMARK_HTMLMINIFIER_OPTIONS_TAB_SWITCH_ON"),
+                "Y",
+                array("checkbox")
+            ),
+            Loc::getMessage("NEWMARK_HTMLMINIFIER_OPTIONS_TAB_ACTION"),
+            array(
+                "enable_desktop_htmlminifier",
+                Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE"),
+                "normal",
+                array("selectbox", array(
+                    "normal" => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_NORMAL"),
+                    "desktop"   => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_DESKTOP"),
+                    "mobile"   => Loc::getMessage("NEWMARK_SPEEDUP_OPTIONS_ENABLE_MOBILE")
+                ))
+            ),
+            array(
+                "exclude_htmlminifier",
+                Loc::getMessage("NEWMARK_CSSINLINER_OPTIONS_TAB_EXCLUDE"),
+                "",
+                array("textarea", 10, 40)
+            ),
+        )
     )
 );
 
@@ -151,7 +182,24 @@ if($request->isPost() && check_bitrix_sessid()){
 
                 $optionValue = $request->getPost($arOption[0]);
 
-                if($arOption[0] == "switch_on_lazy" || $arOption[0] == "switch_on_cssinliner" || $arOption[0] == "include_jquery" || $arOption[0] == "animation"|| $arOption[0] == "inline_google_fonts" || $arOption[0] == "external_inline" || $arOption[0] == "minify_css"){
+                if(
+                    $arOption[0] == "switch_on_lazy"
+                    ||
+                    $arOption[0] == "switch_on_cssinliner"
+                    ||
+                    $arOption[0] == "include_jquery"
+                    ||
+                    $arOption[0] == "animation"
+                    ||
+                    $arOption[0] == "inline_google_fonts"
+                    ||
+                    $arOption[0] == "external_inline"
+                    ||
+                    $arOption[0] == "minify_css"
+                    ||
+                    $arOption[0] == 'switch_on_htmlminifier'
+                )
+                {
 
                     if($optionValue == ""){
 

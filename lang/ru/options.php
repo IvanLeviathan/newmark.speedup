@@ -57,4 +57,13 @@ $MESS["NEWMARK_CSSINLINER_OPTIONS_BOTTOM_NOTE"] = "
 ";
 
 
+//HTML Minifier
+$MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_NAME"] 		 	   = "HTML Minifier";
+$MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_TITLE"] 		 	   = "Настройки HTML Minifier";
+$MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_COMMON"] 	 	   = "Общие";
+$MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_SWITCH_ON"]  	   = "Включить:";
+$MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_ACTION"] 	   = "Поведение";
+$MESS['NEWMARK_HTMLMINIFIER_OPTIONS_TAB_EXCLUDE'] = "Страницы исключения:<br/>(без доменного имени, каждый url в новой строке)";
+
+
 ?>
