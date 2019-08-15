@@ -3,6 +3,7 @@ namespace Newmark\Speedup;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Page\Asset;
 use Bitrix\Main\IO\File;
+use CModule;
 
 /**
  * Class Main
@@ -12,7 +13,7 @@ class Main{
     private static $allOptions;
     private static $preview;
     private static $userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36';
-    private static $isMobile;
+    private static $isMobile = NULL;
     private static $cssPath;
     private static $cacheTime;
     /**
@@ -240,6 +241,9 @@ class Main{
      * @return bool
      */
     private static function checkDesktop($opt){
+        if(is_null(self::$isMobile))
+            return true;
+
         switch ($opt){
             case 'normal':
                 return true;
@@ -266,6 +270,9 @@ class Main{
         $options = self::getOptions();
 
         //set default vars
+        if(!class_exists('CLightHTMLEditor'))
+            CModule::IncludeModule("fileman");
+
         self::$isMobile = \CLightHTMLEditor::IsMobileDevice();
         self::$cssPath = $_SERVER['DOCUMENT_ROOT']."/bitrix/css/".self::getModuleId();
         self::$cacheTime = $options['cssinliner_cache_time'] ? $options['cssinliner_cache_time'] : 3600;
