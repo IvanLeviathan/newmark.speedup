@@ -65,5 +65,9 @@ $MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_SWITCH_ON"]  	   = "Включить:";
 $MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_ACTION"] 	   = "Поведение";
 $MESS['NEWMARK_HTMLMINIFIER_OPTIONS_TAB_EXCLUDE'] = "Страницы исключения:<br/>(без доменного имени, каждый url в новой строке)";
 
+//Image Compress
+$MESS["NEWMARK_IMGCOMPRESS_OPTIONS_TAB_NAME"] 		 	   = "Image Compress";
+$MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_TITLE"] 		 	   = "Настройки Image Compress";
+
 
 ?>

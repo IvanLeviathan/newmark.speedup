@@ -3,6 +3,7 @@ use Bitrix\Main\Localization\Loc;
 use	Bitrix\Main\HttpApplication;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Config\Option;
+use Newmark\Speedup\ImageCompress;
 
 Loc::loadMessages(__FILE__);
 
@@ -159,6 +160,11 @@ $aTabs = array(
                 array("textarea", 10, 40)
             ),
         )
+    ),
+    array(
+        "DIV" 	  => "image_compress",
+        "TAB" 	  => Loc::getMessage("NEWMARK_IMGCOMPRESS_OPTIONS_TAB_NAME"),
+        "TITLE"   => Loc::getMessage("NEWMARK_IMGCOMPRESS_OPTIONS_TAB_TITLE"),
     )
 );
 
@@ -179,7 +185,6 @@ if($request->isPost() && check_bitrix_sessid()){
             }
 
             if($request["apply"]){
-
                 $optionValue = $request->getPost($arOption[0]);
 
                 if(
@@ -211,6 +216,16 @@ if($request->isPost() && check_bitrix_sessid()){
             }elseif($request["default"]){
                 Option::set($module_id, $arOption[0], $arOption[2]);
             }
+
+            if($request['image_compress_start']){
+                ImageCompress::compressAll();
+            }
+            if($request['image_compress_one']){
+                ImageCompress::compressOne($request['image_compress_one']);
+            }
+            if($request['image_return_one']){
+                ImageCompress::returnOne($request['image_return_one']);
+            }
         }
     }
 
@@ -230,13 +245,38 @@ $tabControl->Begin();
 
     <?
     foreach($aTabs as $aTab){
+        if($aTab['DIV'] == 'image_compress'){?>
+            <script src="/bitrix/js/<?=$module_id?>/newmark.jquery.min.js"></script>
+            <script src="/bitrix/js/<?=$module_id?>/datatables.min.js"></script>
+            <link href="/bitrix/css/<?=$module_id?>/datatables.min.css" rel="stylesheet"/>
 
-        if($aTab["OPTIONS"]){
+            <?$tabControl->BeginNextTab();
+            ImageCompress::draw();?>
+                <script>
+                    $(function(){
 
-            $tabControl->BeginNextTab();
+                        $table = $('#image_compress_edit_table');
+                        $table.find("tbody").eq(0).remove();
+                        $table.addClass('display cell-border');
+                        $table.DataTable();
 
-            __AdmSettingsDrawList($module_id, $aTab["OPTIONS"]);
+                    })
+                </script>
+                <style>
+                    .dataTables_wrapper{
+                        margin-top: 30px;
+                    }
+                </style>
+        <?}else{
+            if($aTab["OPTIONS"]){
+
+                $tabControl->BeginNextTab();
+
+                __AdmSettingsDrawList($module_id, $aTab["OPTIONS"]);
+            }
         }
+
+
     }
 
     $tabControl->Buttons();

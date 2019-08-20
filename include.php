@@ -19,7 +19,7 @@ class Main{
     /**
      * @return mixed
      */
-    private static function getModuleId()
+    public static function getModuleId()
     {
         return pathinfo(__DIR__)["basename"];
     }
@@ -154,7 +154,7 @@ class Main{
      * @param $bytes
      * @return float|int
      */
-    private static function formatFileSize($bytes){
+    public static function formatFileSize($bytes){
         return $bytes / 1024;
     }
 
