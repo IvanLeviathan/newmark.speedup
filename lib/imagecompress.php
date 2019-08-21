@@ -174,6 +174,10 @@ class ImageCompress{
         }else
             return FALSE;
 
+        if(filesize($source_url) > filesize($destination_url))
+            copy($destination_url, $source_url);
+
+
         return $destination_url;
     }
     private static function moveImage($source_url, $destination_url){
