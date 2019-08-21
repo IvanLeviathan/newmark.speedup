@@ -13,7 +13,10 @@ class ImageCompress{
         self::drawTable();
     }
     private static function drawBtns(){
-        echo '<input type="submit" name="image_compress_start" value="'.Loc::GetMessage("COMPRESS_START").'" class="adm-btn-save"/>';
+        echo '
+            <input type="submit" name="image_compress_start" value="'.Loc::GetMessage("COMPRESS_START").'" class="adm-btn-save"/>
+            <input type="submit" name="image_return_start" value="'.Loc::GetMessage("RETURN_START").'"/>
+        ';
     }
     private static function drawTable(){
 
@@ -60,10 +63,7 @@ class ImageCompress{
                 $row .= '<td>'.number_format(Main::formatFileSize($image['BEFORE_SIZE']), 2, '.', ' ').' кб.</td>';
 
                 if($image['IS_RESIZED']){
-                    $row .= '<td>'
-                        .Loc::getMessage('IMAGE_COMPRESSED').
-                        '<br/>
-                        <button type="submit" name="image_return_one" value="'.$image['PATH'].'">'.Loc::getMessage('RETURN_ONE_IMG').'</button></td>';
+                    $row .= '<td><button type="submit" name="image_return_one" value="'.$image['PATH'].'">'.Loc::getMessage('RETURN_ONE_IMG').'</button></td>';
                 }else{
                     $row .= '<td><button type="submit" name="image_compress_one" value="'.$image['PATH'].'" class="adm-btn-save">'.Loc::getMessage('COMPRESS_ONE_IMG').'</button></td>';
                 }
@@ -129,6 +129,12 @@ class ImageCompress{
         $images = self::getImagesList(true);
         foreach ($images as $image){
             self::compressImage($image['PATH'], $image['RESIZE_PATH'], 50, $image);
+        }
+    }
+    public static function returnAll(){
+        $images = self::getImagesList();
+        foreach ($images as $image){
+            self::moveImage($image['RESIZE_PATH'], $image['PATH']);
         }
     }
     public static function compressOne($path){
