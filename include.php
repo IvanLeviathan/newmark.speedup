@@ -397,7 +397,7 @@ class Main{
                 "/<link[^>]+>/" => function($matches){
                     $link = $matches[0];
 
-                    if(strpos($link, 'rel="stylesheet"') === false) //if its not stylesheet
+                    if(strpos($link, 'rel="stylesheet"') === false && strpos($link, "rel='stylesheet'") === false) //if its not stylesheet
                         return $link;
                     preg_match_all('/(\w+)=(?:(\'|")([^"\']*)(\'|"))/i',$link, $attrs); //split attrs
                     $styleUrl = false;
