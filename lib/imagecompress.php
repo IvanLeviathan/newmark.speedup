@@ -1,6 +1,7 @@
 <?php
 namespace Newmark\Speedup;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Config\Option;
 Loc::loadMessages(__FILE__);
 
 class ImageCompress{
@@ -13,30 +14,34 @@ class ImageCompress{
         self::drawTable();
     }
     private static function drawBtns(){
-        echo '
+        $btns = '
             <input type="submit" name="image_compress_start" value="'.Loc::GetMessage("COMPRESS_START").'" class="adm-btn-save"/>
             <input type="submit" name="image_return_start" value="'.Loc::GetMessage("RETURN_START").'"/>
         ';
+        echo preg_replace("/\r\n|\n|\r/", '', $btns);
+
     }
     private static function drawTable(){
 
-        self::tableAdd('<thead>');
-            self::tableAdd('<tr>');
-                self::tableAdd('<th>'.Loc::GetMessage("IMAGE_TYPE").'</th>');
-                self::tableAdd('<th>'.Loc::GetMessage("IMAGE_NAME").'</th>');
-                self::tableAdd('<th>'.Loc::GetMessage("IMAGE_PATH").'</th>');
-                self::tableAdd('<th>'.Loc::GetMessage("IMAGE_PICTURE").'</th>');
-                self::tableAdd('<th>'.Loc::GetMessage("IMAGE_SIZE").'</th>');
-                self::tableAdd('<th>'.Loc::GetMessage("IMAGE_SIZE_BEFORE").'</th>');
-                self::tableAdd('<th>'.Loc::GetMessage("IMAGE_COMPRESS").'</th>');
-            self::tableAdd('</tr>');
-        self::tableAdd('</thead>');
+        self::tableAdd('<table id="image-list" clas="display cell-border">');
+            self::tableAdd('<thead>');
+                self::tableAdd('<tr>');
+                    self::tableAdd('<th>'.Loc::GetMessage("IMAGE_TYPE").'</th>');
+                    self::tableAdd('<th>'.Loc::GetMessage("IMAGE_NAME").'</th>');
+                    self::tableAdd('<th>'.Loc::GetMessage("IMAGE_PATH").'</th>');
+                    self::tableAdd('<th>'.Loc::GetMessage("IMAGE_PICTURE").'</th>');
+                    self::tableAdd('<th>'.Loc::GetMessage("IMAGE_SIZE").'</th>');
+                    self::tableAdd('<th>'.Loc::GetMessage("IMAGE_SIZE_BEFORE").'</th>');
+                    self::tableAdd('<th>'.Loc::GetMessage("IMAGE_COMPRESS").'</th>');
+                self::tableAdd('</tr>');
+            self::tableAdd('</thead>');
 
-        self::tableAdd('<tbody>');
-        self::tableAdd(self::drawDataRows());
-        self::tableAdd('</tbody>');
+            self::tableAdd('<tbody>');
+            self::tableAdd(self::drawDataRows());
+            self::tableAdd('</tbody>');
+        self::tableAdd('</table>');
 
-        echo self::$table;
+        echo preg_replace("/\r\n|\n|\r/", '', self::$table);
     }
     private static function tableAdd($text){
         self::$table .= $text;
@@ -74,19 +79,18 @@ class ImageCompress{
         }
         return implode('',$rows);
     }
-    private static function getImagesList($noResized = false, $onePic = false){
-        $imagesArr = array();
-        self::$resizedDir = $_SERVER['DOCUMENT_ROOT'].'/bitrix/images/'.Main::getModuleId().'/image_compress_resized_images';
+    private static function getFolders(){
+        $array = array(self::$root);
 
-        //mask and path
-        if($onePic)
-            $mask = $onePic;
-        else
-            $mask = $_SERVER['DOCUMENT_ROOT'].self::$root."*.{jpg,png}";//эта маска - не регулярка!
+        $option = Option::get(Main::getModuleId(), "compress_folders", "");
+        if($option)
+            $array = preg_split("/\r\n|\n|\r/", $option);
 
-        $cdir = self::rglob($mask, GLOB_BRACE);
-
+        return $array;
+    }
+    private static function findImages($mask, &$imagesArr, $noResized){
         //finding all pics in dir and sub dir
+        $cdir = self::rglob($mask, GLOB_BRACE);
         foreach ($cdir as $value){
             $image = array();
             $pathInfo = pathinfo($value);
@@ -114,13 +118,35 @@ class ImageCompress{
 
             $imagesArr[] = $image;
         }
+    }
+    private static function getImagesList($noResized = false, $onePic = false)
+    {
+        $imagesArr = array();
+        self::$resizedDir = $_SERVER['DOCUMENT_ROOT'] . '/bitrix/images/' . Main::getModuleId() . '/image_compress_resized_images';
+
+        //mask and path
+        if ($onePic){
+            $mask = $onePic;
+            self::findImages($mask, $imagesArr, $noResized);
+        }else {
+            $folders = self::getFolders();
+            foreach ($folders as $folder){
+                $mask = $_SERVER['DOCUMENT_ROOT'] . $folder . "*.{jpg,png}";//эта маска - не регулярка!
+                self::findImages($mask, $imagesArr, $noResized);
+            }
+
+        }
 
         return $imagesArr;
 
     }
     private static function rglob($pattern, $flags = 0) {
         $files = glob($pattern, $flags);
-        foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
+        foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir){
+
+            if(strpos($dir, Main::getModuleId()) !== false)
+                continue;
+
             $files = array_merge($files, self::rglob($dir.'/'.basename($pattern), $flags));
         }
         return $files;

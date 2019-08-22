@@ -69,6 +69,7 @@ $MESS["NEWMARK_HTMLMINIFIER_OPTIONS_BOTTOM_NOTE"] = "Для удобства и 
 //Image Compress
 $MESS["NEWMARK_IMGCOMPRESS_OPTIONS_TAB_NAME"] 		 	   = "Image Compress";
 $MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_TITLE"] 		 	   = "Настройки Image Compress";
+$MESS["NEWMARK_IMGCOMPRESS_OPTIONS_TAB_FOLDERS"] = "Папки для поиска:<br/>(от корня проекта, каждая папка на новой строке. По умолчанию - /upload/)";;
 
 
 ?>

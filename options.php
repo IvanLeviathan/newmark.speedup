@@ -166,6 +166,14 @@ $aTabs = array(
         "DIV" 	  => "image_compress",
         "TAB" 	  => Loc::getMessage("NEWMARK_IMGCOMPRESS_OPTIONS_TAB_NAME"),
         "TITLE"   => Loc::getMessage("NEWMARK_IMGCOMPRESS_OPTIONS_TAB_TITLE"),
+        "OPTIONS" => array(
+            array(
+                "compress_folders",
+                Loc::getMessage("NEWMARK_IMGCOMPRESS_OPTIONS_TAB_FOLDERS"),
+                "",
+                array("textarea", 10, 40)
+            )
+        )
     )
 );
 
@@ -255,67 +263,64 @@ $tabControl->Begin();
 
     <?
     foreach($aTabs as $aTab){
+        if($aTab["OPTIONS"]){
+
+            $tabControl->BeginNextTab();
+
+            __AdmSettingsDrawList($module_id, $aTab["OPTIONS"]);
+        }
+
         if($aTab['DIV'] == 'image_compress'){?>
             <script src="/bitrix/js/<?=$module_id?>/newmark.jquery.min.js"></script>
             <script src="/bitrix/js/<?=$module_id?>/datatables.min.js"></script>
             <link href="/bitrix/css/<?=$module_id?>/datatables.min.css" rel="stylesheet"/>
 
-            <?$tabControl->BeginNextTab();
-            ImageCompress::draw();?>
-                <script>
-                    $(function(){
+            <script>
+                $(function(){
 
-                        $table = $('#image_compress_edit_table');
-                        $table.find("tbody").eq(0).remove();
-                        $table.addClass('display cell-border');
-                        $table.DataTable({
-                            language: {
-                                "processing": "Подождите...",
-                                "search": "Поиск:",
-                                "lengthMenu": "Показать _MENU_ записей",
-                                "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
-                                "infoEmpty": "Записи с 0 до 0 из 0 записей",
-                                "infoFiltered": "(отфильтровано из _MAX_ записей)",
-                                "infoPostFix": "",
-                                "loadingRecords": "Загрузка записей...",
-                                "zeroRecords": "Записи отсутствуют.",
-                                "emptyTable": "В таблице отсутствуют данные",
-                                "paginate": {
-                                    "first": "Первая",
-                                    "previous": "Предыдущая",
-                                    "next": "Следующая",
-                                    "last": "Последняя"
-                                },
-                                "aria": {
-                                    "sortAscending": ": активировать для сортировки столбца по возрастанию",
-                                    "sortDescending": ": активировать для сортировки столбца по убыванию"
-                                },
-                                "select": {
-                                    "rows": {
-                                        "_": "Выбрано записей: %d",
-                                        "0": "Кликните по записи для выбора",
-                                        "1": "Выбрана одна запись"
-                                    }
+                    $table = $('#image_compress_edit_table');
+                    $listTable = $('<?ImageCompress::draw();?>');
+                    $listTable.insertAfter($table);
+                    $('#image-list').DataTable({
+                        language: {
+                            "processing": "Подождите...",
+                            "search": "Поиск:",
+                            "lengthMenu": "Показать _MENU_ записей",
+                            "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+                            "infoEmpty": "Записи с 0 до 0 из 0 записей",
+                            "infoFiltered": "(отфильтровано из _MAX_ записей)",
+                            "infoPostFix": "",
+                            "loadingRecords": "Загрузка записей...",
+                            "zeroRecords": "Записи отсутствуют.",
+                            "emptyTable": "В таблице отсутствуют данные",
+                            "paginate": {
+                                "first": "Первая",
+                                "previous": "Предыдущая",
+                                "next": "Следующая",
+                                "last": "Последняя"
+                            },
+                            "aria": {
+                                "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                                "sortDescending": ": активировать для сортировки столбца по убыванию"
+                            },
+                            "select": {
+                                "rows": {
+                                    "_": "Выбрано записей: %d",
+                                    "0": "Кликните по записи для выбора",
+                                    "1": "Выбрана одна запись"
                                 }
                             }
-                        });
+                        }
+                    });
 
-                    })
-                </script>
-                <style>
-                    .dataTables_wrapper{
-                        margin-top: 30px;
-                    }
-                </style>
-        <?}else{
-            if($aTab["OPTIONS"]){
-
-                $tabControl->BeginNextTab();
-
-                __AdmSettingsDrawList($module_id, $aTab["OPTIONS"]);
-            }
-        }
-
+                })
+            </script>
+            <style>
+                .dataTables_wrapper{
+                    margin-top: 30px;
+                }
+            </style>
+        <?}
 
     }
 
