@@ -423,7 +423,7 @@ class Main{
                     if($options['minify_css'] == 'Y')
                         $styleContent = self::minimizeCSS($styleContent);
 
-
+                    $styleContent = preg_replace('/@font-face(\s+|){/i', '@font-face{font-display:swap;', $styleContent);
                     return '<style type="text/css">'.$styleContent.'</style>';
                 }
             ),
