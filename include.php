@@ -287,15 +287,36 @@ class Main{
             self::cssinlinerActions($content, $options);
 
         //start HTML Minifier?
-        if($options['switch_on_htmlminifier'] == 'Y' && self::checkPagePermission($options['exclude_htmlminifier']) && self::checkDesktop($options['enable_desktop_htmlminifier']))
+        if(!$USER->IsAdmin() && $options['switch_on_htmlminifier'] == 'Y' && self::checkPagePermission($options['exclude_htmlminifier']) && self::checkDesktop($options['enable_desktop_htmlminifier']))
             self::htmlminifierActions($content);
 
         return false;
     }
     private static function htmlminifierActions(&$content){
-        $search = array('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s');
-        $replace = array('>','<','\\1');
-        $content = preg_replace($search, $replace, $content);
+        //$search = array('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s');
+        //$replace = array('>','<','\\1');
+        //$content = preg_replace($search, $replace, $content);
+
+        $search = '%# Collapse whitespace everywhere but in blacklisted elements.
+        (?>             # Match all whitespans other than single space.
+          [^\S ]\s*     # Either one [\t\r\n\f\v] and zero or more ws,
+        | \s{2,}        # or two or more consecutive-any-whitespace.
+        ) # Note: The remaining regex consumes no text at all...
+        (?=             # Ensure we are not in a blacklist tag.
+          [^<]*+        # Either zero or more non-"<" {normal*}
+          (?:           # Begin {(special normal*)*} construct
+            <           # or a < starting a non-blacklist tag.
+            (?!/?(?:textarea|pre|script)\b)
+            [^<]*+      # more non-"<" {normal*}
+          )*+           # Finish "unrolling-the-loop"
+          (?:           # Begin alternation group.
+            <           # Either a blacklist start tag.
+            (?>textarea|pre|script)\b
+          | \z          # or end of file.
+          )             # End alternation group.
+        )  # If we made it here, we are not in a blacklist tag.
+        %Six';
+        $content = preg_replace($search, " ", $content);
     }
     /**
      * @param $content
@@ -378,13 +399,14 @@ class Main{
 
                     if(strpos($link, 'rel="stylesheet"') === false) //if its not stylesheet
                         return $link;
-                    preg_match_all('/(\w+)=("[^"]*")/i',$link, $attrs); //split attrs
+                    preg_match_all('/(\w+)=(?:(\'|")([^"\']*)(\'|"))/i',$link, $attrs); //split attrs
                     $styleUrl = false;
                     foreach ($attrs[0] as $attr){ //find href
                         $attrArr = explode('=', $attr);
                         if($attrArr[0] == 'href'){
                             unset($attrArr[0]);
                             $styleUrl = str_replace('"', '', implode('=',$attrArr));
+                            $styleUrl = str_replace("'", '', $styleUrl);
                             break;
                         }
                     }

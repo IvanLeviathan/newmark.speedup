@@ -159,6 +159,7 @@ $aTabs = array(
                 "",
                 array("textarea", 10, 40)
             ),
+            Loc::getMessage("NEWMARK_HTMLMINIFIER_OPTIONS_BOTTOM_NOTE"),
         )
     ),
     array(
