@@ -177,8 +177,14 @@ $aTabs = array(
     )
 );
 
-if($request->isPost() && check_bitrix_sessid()){
+if($_POST['get_images_table']){
+    global $APPLICATION;
+    $APPLICATION->RestartBuffer();
+    ImageCompress::draw();
+    die();
+}
 
+if($request->isPost() && check_bitrix_sessid()){
     foreach($aTabs as $aTab){
 
         foreach($aTab["OPTIONS"] as $arOption){
@@ -277,42 +283,50 @@ $tabControl->Begin();
 
             <script>
                 $(function(){
-
-                    $table = $('#image_compress_edit_table');
-                    $listTable = $('<?ImageCompress::draw();?>');
-                    $listTable.insertAfter($table);
-                    $('#image-list').DataTable({
-                        language: {
-                            "processing": "Подождите...",
-                            "search": "Поиск:",
-                            "lengthMenu": "Показать _MENU_ записей",
-                            "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
-                            "infoEmpty": "Записи с 0 до 0 из 0 записей",
-                            "infoFiltered": "(отфильтровано из _MAX_ записей)",
-                            "infoPostFix": "",
-                            "loadingRecords": "Загрузка записей...",
-                            "zeroRecords": "Записи отсутствуют.",
-                            "emptyTable": "В таблице отсутствуют данные",
-                            "paginate": {
-                                "first": "Первая",
-                                "previous": "Предыдущая",
-                                "next": "Следующая",
-                                "last": "Последняя"
-                            },
-                            "aria": {
-                                "sortAscending": ": активировать для сортировки столбца по возрастанию",
-                                "sortDescending": ": активировать для сортировки столбца по убыванию"
-                            },
-                            "select": {
-                                "rows": {
-                                    "_": "Выбрано записей: %d",
-                                    "0": "Кликните по записи для выбора",
-                                    "1": "Выбрана одна запись"
+                    var $table = $('#image_compress_edit_table');
+                    $.ajax({
+                        type: "POST",
+                        data: {'get_images_table': 'Y'},
+                        success: function (data) {
+                            $listTable = $(data);
+                            $listTable.insertAfter($table);
+                            $('#image-list').DataTable({
+                                language: {
+                                    "processing": "Подождите...",
+                                    "search": "Поиск:",
+                                    "lengthMenu": "Показать _MENU_ записей",
+                                    "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+                                    "infoEmpty": "Записи с 0 до 0 из 0 записей",
+                                    "infoFiltered": "(отфильтровано из _MAX_ записей)",
+                                    "infoPostFix": "",
+                                    "loadingRecords": "Загрузка записей...",
+                                    "zeroRecords": "Записи отсутствуют.",
+                                    "emptyTable": "В таблице отсутствуют данные",
+                                    "paginate": {
+                                        "first": "Первая",
+                                        "previous": "Предыдущая",
+                                        "next": "Следующая",
+                                        "last": "Последняя"
+                                    },
+                                    "aria": {
+                                        "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                                        "sortDescending": ": активировать для сортировки столбца по убыванию"
+                                    },
+                                    "select": {
+                                        "rows": {
+                                            "_": "Выбрано записей: %d",
+                                            "0": "Кликните по записи для выбора",
+                                            "1": "Выбрана одна запись"
+                                        }
+                                    }
                                 }
-                            }
+                            });
+                        },
+                        error: function (data) {
+                            alert('images load error, look in console');
+                            console.log(data);
                         }
                     });
-
                 })
             </script>
             <style>
