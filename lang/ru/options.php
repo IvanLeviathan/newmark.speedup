@@ -72,4 +72,10 @@ $MESS["NEWMARK_HTMLMINIFIER_OPTIONS_TAB_TITLE"] 		 	   = "Настройки Ima
 $MESS["NEWMARK_IMGCOMPRESS_OPTIONS_TAB_FOLDERS"] = "Папки для поиска:<br/>(от корня проекта, каждая папка на новой строке. По умолчанию - /upload/)";;
 
 
+//Modules
+$MESS["NEWMARK_MODULES_OPTIONS_TAB_NAME"] 		 	   = "Модули";
+$MESS["NEWMARK_MODULES_OPTIONS_TAB_TITLE"] 		 	   = "Необязательные модули";
+$MESS["NEWMARK_MODULES_MODULE_INSTALL"] = "Включить";
+$MESS["NEWMARK_MODULES_MODULE_DELETE"] = "Отключить";
+$MESS["NEWMARK_MODULES_DESC"] = "При инциализации ядра 1С-Битрикс подключается большой список модулей. Они отнимают ресурсы, но при этом не нужны для полноценной работы сайта.<br/>Перед тем, как отключать модули, обязательно сделайте <a href='/bitrix/admin/dump.php' target='_blank'>резервную копию</a> сайта.";
 ?>

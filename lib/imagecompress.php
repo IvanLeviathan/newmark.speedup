@@ -4,15 +4,35 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 Loc::loadMessages(__FILE__);
 
+/**
+ * Class ImageCompress
+ * @package Newmark\Speedup
+ */
 class ImageCompress{
+    /**
+     * @var string
+     */
     private static $root = '/upload/';
+    /**
+     * @var string
+     */
     public static $table = '';
+    /**
+     * @var
+     */
     private static $resizedDir;
 
+    /**
+     *
+     */
     public static function draw(){
         self::drawBtns();
         self::drawTable();
     }
+
+    /**
+     *
+     */
     private static function drawBtns(){
         $btns = '
             <input type="submit" name="image_compress_start" value="'.Loc::GetMessage("COMPRESS_START").'" class="adm-btn-save"/>
@@ -21,6 +41,10 @@ class ImageCompress{
         echo preg_replace("/\r\n|\n|\r/", '', $btns);
 
     }
+
+    /**
+     *
+     */
     private static function drawTable(){
 
         self::tableAdd('<table id="image-list" clas="display cell-border">');
@@ -43,9 +67,17 @@ class ImageCompress{
 
         echo preg_replace("/\r\n|\n|\r/", '', self::$table);
     }
+
+    /**
+     * @param $text
+     */
     private static function tableAdd($text){
         self::$table .= $text;
     }
+
+    /**
+     * @return string
+     */
     private static function drawDataRows(){
         $images = self::getImagesList();
         $rows = array();
@@ -79,6 +111,10 @@ class ImageCompress{
         }
         return implode('',$rows);
     }
+
+    /**
+     * @return array
+     */
     private static function getFolders(){
         $array = array(self::$root);
 
@@ -88,6 +124,12 @@ class ImageCompress{
 
         return $array;
     }
+
+    /**
+     * @param $mask
+     * @param $imagesArr
+     * @param $noResized
+     */
     private static function findImages($mask, &$imagesArr, $noResized){
         //finding all pics in dir and sub dir
         $cdir = self::rglob($mask, GLOB_BRACE);
@@ -119,6 +161,12 @@ class ImageCompress{
             $imagesArr[] = $image;
         }
     }
+
+    /**
+     * @param bool $noResized
+     * @param bool $onePic
+     * @return array
+     */
     private static function getImagesList($noResized = false, $onePic = false)
     {
         $imagesArr = array();
@@ -140,6 +188,12 @@ class ImageCompress{
         return $imagesArr;
 
     }
+
+    /**
+     * @param $pattern
+     * @param int $flags
+     * @return array
+     */
     private static function rglob($pattern, $flags = 0) {
         $files = glob($pattern, $flags);
         foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir){
@@ -151,26 +205,50 @@ class ImageCompress{
         }
         return $files;
     }
+
+    /**
+     *
+     */
     public static function compressAll(){
         $images = self::getImagesList(true);
         foreach ($images as $image){
             self::compressImage($image['PATH'], $image['RESIZE_PATH'], 50, $image);
         }
     }
+
+    /**
+     *
+     */
     public static function returnAll(){
         $images = self::getImagesList();
         foreach ($images as $image){
             self::moveImage($image['RESIZE_PATH'], $image['PATH']);
         }
     }
+
+    /**
+     * @param $path
+     */
     public static function compressOne($path){
         $image = reset(self::getImagesList(true, $path));
         self::compressImage($image['PATH'], $image['RESIZE_PATH'], 50, $image);
     }
+
+    /**
+     * @param $path
+     */
     public static function returnOne($path){
         $image = reset(self::getImagesList(false, $path));
         self::moveImage($image['RESIZE_PATH'], $image['PATH']);
     }
+
+    /**
+     * @param $source_url
+     * @param $destination_url
+     * @param $quality
+     * @param $image
+     * @return bool
+     */
     public static function compressImage($source_url, $destination_url, $quality, $image){
         if( $destination_url == NULL || $destination_url == "" ) $destination_url = $source_url;
 
@@ -206,6 +284,11 @@ class ImageCompress{
 
         return $destination_url;
     }
+
+    /**
+     * @param $source_url
+     * @param $destination_url
+     */
     private static function moveImage($source_url, $destination_url){
         $fileName = pathinfo($source_url, PATHINFO_BASENAME);
 

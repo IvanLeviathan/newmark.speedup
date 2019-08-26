@@ -292,6 +292,10 @@ class Main{
 
         return false;
     }
+
+    /**
+     * @param $content
+     */
     private static function htmlminifierActions(&$content){
         //$search = array('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s');
         //$replace = array('>','<','\\1');
@@ -429,6 +433,103 @@ class Main{
             ),
             $content
         );
+    }
+
+    /**
+     * @return array
+     */
+    private static function getNonImportantModulesArr(){
+        return array(
+            "ldap" => "AD/LDAP интеграция (ldap)",
+            "pull" => "Push and Pull (pull)",
+            "wiki" => "Wiki (wiki)",
+            "abtest" => "А/B-тестирование (abtest)",
+            "statistic" => "Веб-аналитика (statistic)",
+            "cluster" => "Веб-кластер (cluster)",
+            "im" => "Веб-мессенджер (im)",
+            "webservice" => "Веб-сервисы (webservice)",
+            "bizprocdesigner" => "Дизайнер бизнес-процессов (bizprocdesigner)",
+            "workflow" => "Документооборот (workflow)",
+            "calendar" => "Календарь событий (calendar)",
+            "report" => "Конструктор отчетов (report)",
+            "idea" => "Менеджер идей (idea)",
+            "mobileapp" => "Мобильная платформа (mobileapp) - если не подключено мобильное приложение",
+            "eshopapp" => "Мобильное приложение для интернет-магазина (eshopapp) - если не подключено мобильное приложение",
+            "learning" => "Обучение (learning)",
+            "translate" => "Перевод (translate)",
+            "mail" => "Почта (mail)",
+            "support" => "Техподдержка (support)",
+            "lists" => "Универсальные списки (lists)",
+            "scale" => "Управление масштабированием (scale)"
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    private static function getAllModules(){
+        //Get list of subdirs in modules folder
+        $folders = array(
+            "/local/modules",
+            "/bitrix/modules",
+        );
+        foreach($folders as $folder)
+        {
+            $handle = @opendir($_SERVER["DOCUMENT_ROOT"].$folder);
+            if($handle)
+            {
+                while (false !== ($dir = readdir($handle)))
+                {
+                    if(!isset($arModules[$dir]) && is_dir($_SERVER["DOCUMENT_ROOT"].$folder."/".$dir) && $dir!="." && $dir!=".." && $dir!="main" && strpos($dir, ".") === false)
+                    {
+                        $module_dir = $_SERVER["DOCUMENT_ROOT"].$folder."/".$dir;
+                        if($info = CModule::CreateModuleObject($dir))
+                        {
+                            $arModules[$dir]["MODULE_ID"] = $info->MODULE_ID;
+                            $arModules[$dir]["MODULE_NAME"] = $info->MODULE_NAME;
+                            $arModules[$dir]["MODULE_DESCRIPTION"] = $info->MODULE_DESCRIPTION;
+                            $arModules[$dir]["MODULE_VERSION"] = $info->MODULE_VERSION;
+                            $arModules[$dir]["MODULE_VERSION_DATE"] = $info->MODULE_VERSION_DATE;
+                            $arModules[$dir]["MODULE_SORT"] = $info->MODULE_SORT;
+                            $arModules[$dir]["MODULE_PARTNER"] = (strpos($dir, ".") !== false) ? $info->PARTNER_NAME : "";
+                            $arModules[$dir]["MODULE_PARTNER_URI"] = (strpos($dir, ".") !== false) ? $info->PARTNER_URI : "";
+                            $arModules[$dir]["IsInstalled"] = $info->IsInstalled();
+                        }
+                    }
+                }
+                closedir($handle);
+            }
+        }
+        \Bitrix\Main\Type\Collection::sortByColumn(
+            $arModules,
+            ['MODULE_SORT' => SORT_ASC, 'MODULE_NAME' => SORT_STRING],
+            '',
+            null,
+            true
+        );
+        return $arModules;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getNotImportantModulesList(){
+        $modules = self::getNonImportantModulesArr();
+        $allModules = self::getAllModules();
+
+        foreach ($modules as $module => $name){
+            if($onSite = $allModules[$module]) {
+                $modules[$module] = array(
+                    'NAME' => $onSite['MODULE_NAME'],
+                    'INSTALLED' => $onSite['IsInstalled']
+                );
+            }else{
+                unset($modules[$module]);
+                continue;
+            }
+        }
+
+        return $modules;
     }
 }
 

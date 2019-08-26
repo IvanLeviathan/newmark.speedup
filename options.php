@@ -174,6 +174,14 @@ $aTabs = array(
                 array("textarea", 10, 40)
             )
         )
+    ),
+    array(
+        "DIV" 	  => "modules",
+        "TAB" 	  => Loc::getMessage("NEWMARK_MODULES_OPTIONS_TAB_NAME"),
+        "TITLE"   => Loc::getMessage("NEWMARK_MODULES_OPTIONS_TAB_TITLE"),
+        "OPTIONS" => array(
+            Loc::getMessage("NEWMARK_MODULES_DESC"),
+        )
     )
 );
 
@@ -275,7 +283,22 @@ $tabControl->Begin();
 
             __AdmSettingsDrawList($module_id, $aTab["OPTIONS"]);
         }
+        if($aTab['DIV'] == 'modules'){
+            $modulesArr = \Newmark\Speedup\Main::getNotImportantModulesList();
+            $moduleDeleteLink = '/bitrix/admin/module_admin.php?action=&lang='.LANGUAGE_ID.'&'.bitrix_sessid_get().'&uninstall=Удалить';
+            $moduleInstallLink = '/bitrix/admin/module_admin.php?action=&lang='.LANGUAGE_ID.'&'.bitrix_sessid_get().'&install=Установить';
+            foreach ($modulesArr as $module => $moduleArr){?>
+              <tr>
+                  <td width="50%"><span style="color:<?=$moduleArr['INSTALLED'] ? 'red' : 'green'?>;"><?=$moduleArr['NAME']?></span></td>
+                  <?if($moduleArr['INSTALLED']):?>
+                    <td width="50%"><a class="adm-btn adm-btn-green" href="<?=$moduleDeleteLink.'&id='.$module?>" target="_blank"><?=Loc::GetMessage("NEWMARK_MODULES_MODULE_DELETE")?></a></td>
+                  <?else:?>
+                      <td width="50%"><a class="adm-btn" href="<?=$moduleInstallLink.'&id='.$module?>" target="_blank"><?=Loc::GetMessage("NEWMARK_MODULES_MODULE_INSTALL")?></a></td>
+                  <?endif;?>
 
+              </tr>
+            <?}
+        }
         if($aTab['DIV'] == 'image_compress'){?>
             <script src="/bitrix/js/<?=$module_id?>/newmark.jquery.min.js"></script>
             <script src="/bitrix/js/<?=$module_id?>/datatables.min.js"></script>
