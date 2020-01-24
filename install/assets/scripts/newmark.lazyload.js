@@ -3,6 +3,7 @@
 
     var $html = $('html');
 
+
     $(function(){
         $(window).scroll(makeLazy);
         $(window).resize(makeLazy);
@@ -27,9 +28,16 @@
                     $image.attr('srcset', dataSrcset);
                     $image.removeAttr('data-srcset');
                 }
-                if(params['animation'] == 'Y')
+				if(params['animation'] == 'Y')
                     $image.addClass('newmark-lazyload-loaded');
 
+				$image.on("load",function(){
+					$image.removeClass('newmark-lazyload-loading');
+				}).each(function(){
+						if(this.complete)
+							$image.trigger("load")
+					}
+				);
             }
         });
     }

@@ -63,6 +63,19 @@ $aTabs = array(
                 "Y",
                 array("checkbox")
             ),
+			array(
+				"preloader",
+				Loc::getMessage("NEWMARK_LAZYLOAD_OPTIONS_TAB_PRELOADER"),
+				"",
+				array("text")
+			),
+			array(
+				"background_size",
+				Loc::getMessage('NEWMARK_LAZYLOAD_OPTIONS_TAB_BACKGROUND_SIZE'),
+				"",
+				array("text")
+
+			),
             Loc::getMessage("NEWMARK_LAZYLOAD_OPTIONS_BOTTOM_NOTE"),
         )
     ),
@@ -273,16 +286,16 @@ $tabControl->Begin();
 
 ?>
 
-<form action="<? echo($APPLICATION->GetCurPage()); ?>?mid=<? echo($module_id); ?>&lang=<? echo(LANG); ?>" method="post">
+<form action="<? echo($APPLICATION->GetCurPage()); ?>?mid=<? echo($module_id); ?>&lang=<? echo(LANG); ?>" method="post" name="speedup">
 
     <?
     foreach($aTabs as $aTab){
         if($aTab["OPTIONS"]){
 
             $tabControl->BeginNextTab();
-
             __AdmSettingsDrawList($module_id, $aTab["OPTIONS"]);
         }
+
         if($aTab['DIV'] == 'modules'){
             $modulesArr = \Newmark\Speedup\Main::getNotImportantModulesList();
             $moduleDeleteLink = '/bitrix/admin/module_admin.php?action=&lang='.LANGUAGE_ID.'&'.bitrix_sessid_get().'&uninstall=Удалить';
@@ -301,6 +314,7 @@ $tabControl->Begin();
         }
         if($aTab['DIV'] == 'image_compress'){?>
             <script src="/bitrix/js/<?=$module_id?>/newmark.jquery.min.js"></script>
+
             <script src="/bitrix/js/<?=$module_id?>/datatables.min.js"></script>
             <link href="/bitrix/css/<?=$module_id?>/datatables.min.css" rel="stylesheet"/>
 
@@ -362,8 +376,28 @@ $tabControl->Begin();
     }
 
     $tabControl->Buttons();
-    ?>
+	$preloaderFile = Option::get($module_id, 'preloader');
 
+	CAdminFileDialog::ShowScript
+	(
+		Array(
+			"event" => "BtnClick",
+			"arResultDest" => array("FORM_NAME" => "speedup", "FORM_ELEMENT_NAME" => "preloader"),
+			"arPath" => array("PATH" => GetDirPath($preloaderFile)),
+			"select" => 'F',// F - file only, D - folder only
+			"operation" => 'O',// O - open, S - save
+			"showUploadTab" => true,
+			"showAddToMenuTab" => false,
+			"fileFilter" => 'jpg,jpeg,png,gif,svg',
+			"allowAllFiles" => true,
+			"SaveConfig" => true,
+		)
+	);
+	?>
+	<script>
+		var $preloader = $('input[name="preloader"]');
+		$('<input type="button" name="browse" value="..." onClick="BtnClick()">').insertAfter($preloader);
+	</script>
     <input type="submit" name="apply" value="<? echo(Loc::GetMessage("NEWMARK_SPEEDUP_OPTIONS_INPUT_APPLY")); ?>" class="adm-btn-save" />
     <input type="submit" name="default" value="<? echo(Loc::GetMessage("NEWMARK_SPEEDUP_OPTIONS_INPUT_DEFAULT")); ?>" />
     <div style="text-align:right;">

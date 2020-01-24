@@ -19,6 +19,8 @@ $MESS["NEWMARK_LAZYLOAD_OPTIONS_TAB_SELECTOR"]  	   = "К каким карти�
 $MESS['NEWMARK_LAZYLOAD_OPTIONS_TAB_EXCLUDE'] = "Страницы исключения:<br/>(без доменного имени, каждый url в новой строке)";
 $MESS["NEWMARK_LAZYLOAD_OPTIONS_TAB_VIEW"] = "Внешний вид";
 $MESS['NEWMARK_LAZYLOAD_OPTIONS_TAB_ANIMATION'] = 'Анимация появления';
+$MESS['NEWMARK_LAZYLOAD_OPTIONS_TAB_PRELOADER'] = 'Картинка для lazy load<br/>(по-умолчанию стандартная картинка)';
+$MESS['NEWMARK_LAZYLOAD_OPTIONS_TAB_BACKGROUND_SIZE'] = 'CSS-свойство background-size для картинки lazy load';
 
 $MESS["NEWMARK_LAZYLOAD_OPTIONS_BOTTOM_NOTE"] = "
     <b style=\"color: #000; font-size:16px;\">Справка по настройкам</b>

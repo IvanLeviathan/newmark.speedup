@@ -12,6 +12,8 @@ use CModule;
 class Main{
     private static $allOptions;
     private static $preview;
+	private static $background;
+	private static $loadingClass = 'newmark-lazyload-loading';
     private static $userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36';
     private static $isMobile = NULL;
     private static $cssPath;
@@ -70,6 +72,8 @@ class Main{
             "switch_on_htmlminifier" => Option::get(self::getModuleId(), 'switch_on_htmlminifier', 'Y'),
             "exclude_htmlminifier" => Option::get(self::getModuleId(), 'exclude_htmlminifier', ''),
             "enable_desktop_htmlminifier" => Option::get(self::getModuleId(), 'enable_desktop_htmlminifier', 'normal'),
+			"preloader" => Option::get(self::getModuleId(), 'preloader', ''),
+			"background_size" => Option::get(self::getModuleId(), 'background_size', '')
         );
         self::$allOptions = $optionsArr;
         return $optionsArr;
@@ -329,7 +333,23 @@ class Main{
     private static function lazyActions(&$content, $options){
 
         //vars
-        self::$preview = '/bitrix/images/'.self::getModuleId().'/newmark_lazy_load.gif'; //make preview url
+        self::$preview = '/bitrix/images/'.self::getModuleId().'/newmark_empty.png'; //make preview url
+		self::$background = '/bitrix/images/'.self::getModuleId().'/newmark_lazy_load.svg';
+		if($options['preloader'])
+			self::$background = $options['preloader'];
+
+		// make style
+		$styleStr = '<style>';
+			$styleStr .= '.'.self::$loadingClass.'{';
+				$styleStr .= 'background: url('.self::$background.') no-repeat center center;';
+				$styleStr .= 'max-width: 100%;';
+				$styleStr .= 'max-height: 100%;';
+				if($options['background_size'])
+					$styleStr .= 'background-size: '.$options['background_size'].';';
+			$styleStr .= '}';
+		$styleStr .= '</style>';
+		// /make style
+
         $selector = $options['selector'] ? $options['selector'] : 'img';
 
         $dom = new DomQuery($content);
@@ -348,13 +368,14 @@ class Main{
                     $uniqId = uniqid();
                     $domImg = new DomQuery($img);
                     $md5 = md5(str_replace(' ','', (string) $domImg));
+					$classSet = false;
 
                     if(!array_key_exists($md5, $imagesArr))
                         return $img;
 
                     preg_match_all('/(\w+)=("[^"]*")/i',$img, $attrs);
-                    $imgStr = '<img ';
 
+                    $imgStr = '<img ';
                     foreach ($attrs[0] as $attr){
                         $attrArr = explode('=', $attr);
 
@@ -373,21 +394,29 @@ class Main{
                             continue;
                         }
 
+						if($attrArr[0] == 'class'){
+							$imgStr .= 'class="'.substr($attrArr[1], 1, -1).' '.self::$loadingClass.'" ';
+							$classSet = true;
+							continue;
+						}
 
                         $imgStr .= $attr.' ';
                     }
                     $imgStr .= 'data-nm-id="'.$uniqId.'"';
+					if(!$classSet)
+						$imgStr .= ' class="'.self::$loadingClass.'"';
+
                     $imgStr .= '/>';
 
 
                     return $imgStr;
-                }
+                },
+				"/<\/head>/" => function($matches) use ($styleStr){
+					return $styleStr.$matches[0];
+				}
             ),
             $content
         );
-
-
-
 
     }
 
