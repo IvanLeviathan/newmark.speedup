@@ -21,23 +21,25 @@
             $image = $($image);
             if(come($image)){
                 var dataSrc = $image.data('src');
-                $image.attr('src', dataSrc);
-                $image.removeAttr('data-src');
-                if($image.attr('srcset') && $image.data('srcset')){
-                    var dataSrcset = $image.data('srcset');
-                    $image.attr('srcset', dataSrcset);
-                    $image.removeAttr('data-srcset');
-                }
-				if(params['animation'] == 'Y')
-                    $image.addClass('newmark-lazyload-loaded');
+				if(!!dataSrc){
+	                $image.attr('src', dataSrc);
+	                $image.removeAttr('data-src');
+	                if($image.attr('srcset') && $image.data('srcset')){
+	                    var dataSrcset = $image.data('srcset');
+	                    $image.attr('srcset', dataSrcset);
+	                    $image.removeAttr('data-srcset');
+	                }
+					if(params['animation'] == 'Y')
+	                    $image.addClass('newmark-lazyload-loaded');
 
-				$image.on("load",function(){
-					$image.removeClass('newmark-lazyload-loading');
-				}).each(function(){
-						if(this.complete)
-							$image.trigger("load")
-					}
-				);
+					$image.on("load",function(){
+						$image.removeClass('newmark-lazyload-loading');
+					}).each(function(){
+							if(this.complete)
+								$image.trigger("load")
+						}
+					);
+				}
             }
         });
     }
