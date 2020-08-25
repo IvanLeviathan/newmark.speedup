@@ -331,7 +331,8 @@ class Main{
      * @param $options
      */
     private static function lazyActions(&$content, $options){
-
+		if(!class_exists('DomQuery'))
+			return;
         //vars
         self::$preview = '/bitrix/images/'.self::getModuleId().'/newmark_empty.png'; //make preview url
 		self::$background = '/bitrix/images/'.self::getModuleId().'/newmark_lazy_load.svg';
@@ -365,9 +366,9 @@ class Main{
             array(
                 "/<img[^>]+>/" => function($matches) use ($options, $imagesArr){
                     $img = $matches[0];
+                    $uniqId = uniqid();
                     $domImg = new DomQuery($img);
                     $md5 = md5(str_replace(' ','', (string) $domImg));
-					$uniqId = $md5;
 					$classSet = false;
 
                     if(!array_key_exists($md5, $imagesArr))
